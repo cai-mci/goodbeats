@@ -17,3 +17,5 @@ def get_music_features(track_url):
     track_id = track_url.split(':')[-1].split('/')[-1].split('?')[0]
 
     audio_features = sp.audio_features([track_id])[0]
+
+print("hi")
