@@ -61,7 +61,13 @@ print(addSong([""], [1,0,2,0,3,1], "song", {}))
 # print(testMatrix)
 
 def top_song(song, n):
-    similarity_scores = sim_matrix[song]
+    similarity_scores = []
+
+    for i in range(1, len(matrix[0])):
+        song2Name = matrix[0][i]
+        matrix[len(matrix) - 1].append(cosine_similarity(song,dict[song2Name]))
+
+
     if n >= len(similarity_scores):
         indexes = []
         for i in similarity_scores:
@@ -75,3 +81,4 @@ def top_song(song, n):
         return indexes
 
 print(top_song(1, 4))
+
