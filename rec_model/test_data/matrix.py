@@ -20,15 +20,16 @@ drop = ['artistName', 'msPlayed', 'type', 'id',
 fullSongData = dataFrame.to_numpy()
 audioFeatures = dataFrame.drop(columns=drop)
 audioMatrix = audioFeatures.drop(columns=['trackName']).to_numpy()
+audioFeaturesWithName = audioFeatures.to_numpy()
 testSong1 = audioMatrix[0]
 testSong2 = audioMatrix[754]
 
 idDict = {}
 songDict = {}
 
-for i in range(1, len(audioFeatures)):
-    idDict[i] = audioFeatures[i][0]
-    songDict[audioFeatures[i][0]] = i
+for i in range(1, len(audioFeaturesWithName)):
+    idDict[i] = audioFeaturesWithName[i][0]
+    songDict[audioFeaturesWithName[i][0]] = i
 
 
 
