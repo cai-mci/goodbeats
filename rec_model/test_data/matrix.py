@@ -16,11 +16,22 @@ dataFrame = pd.read_csv('Spotify_Song_Attributes.csv')
 # print(dataFrame.head())
 drop = ['artistName', 'msPlayed', 'type', 'id', 
              'uri', 'track_href', 'analysis_url', 'genre']
+
 fullSongData = dataFrame.to_numpy()
 audioFeatures = dataFrame.drop(columns=drop)
 audioMatrix = audioFeatures.drop(columns=['trackName']).to_numpy()
 testSong1 = audioMatrix[0]
 testSong2 = audioMatrix[754]
+
+idDict = {}
+songDict = {}
+
+for i in range(1, len(audioFeatures)):
+    idDict[i] = audioFeatures[i][0]
+    songDict[audioFeatures[i][0]] = i
+
+
+
 
 # a = np.array([5, 4, 2])
 # b = np.array([1111, 2222, 333333])
@@ -48,10 +59,10 @@ testSongFull = fullSongData[0]
 #print(addSong, testSongFull, dataFrame['trackName'][0], testDict)
 # print(testMatrix)
 
+
+
 def top_song(song, n):
     similarity_scores = []
-
-    
 
     for i in range(1, len(audioMatrix)):
         song2Name = audioMatrix[i][0]
