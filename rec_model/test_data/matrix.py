@@ -41,32 +41,22 @@ def cosine_similarity(song1, song2):
 # add_to_matrix(testMatrix, testSong1)
 # add_to_matrix(testMatrix, testSong2)
 
-testMatrix = [[]]
+testMatrix = [[""]]
 testDict = {}
 testSongFull = fullSongData[0]
-def addSong(matrix: list, song: list, songName: str, dict: dict):
-    dict[songName] = song
 
-    matrix.append(songName)
-    matrix[0].append(songName)
-
-    for i in range(1, len(matrix[0])):
-        song2Name = matrix[0][i]
-        matrix[len(matrix) - 1].append(cosine_similarity(song,dict[song2Name]))
-
-    return matrix
-
-print(addSong([""], [1,0,2,0,3,1], "song", {}))
 #print(addSong, testSongFull, dataFrame['trackName'][0], testDict)
 # print(testMatrix)
 
 def top_song(song, n):
     similarity_scores = []
 
-    for i in range(1, len(matrix[0])):
-        song2Name = matrix[0][i]
-        matrix[len(matrix) - 1].append(cosine_similarity(song,dict[song2Name]))
+    
 
+    for i in range(1, len(audioMatrix)):
+        song2Name = audioMatrix[i][0]
+        print(song2Name)
+        similarity_scores.append(cosine_similarity(audioMatrix[song], audioMatrix[i]))
 
     if n >= len(similarity_scores):
         indexes = []
@@ -81,4 +71,3 @@ def top_song(song, n):
         return indexes
 
 print(top_song(1, 4))
-
