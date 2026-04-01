@@ -12,7 +12,7 @@ import csv
 #         break
 
 
-dataFrame = pd.read_csv('Spotify_Song_Attributes.csv')
+dataFrame = pd.read_csv('test_data/Spotify_Song_Attributes.csv')
 # print(dataFrame.head())
 drop = ['artistName', 'msPlayed', 'type', 'id', 
              'uri', 'track_href', 'analysis_url', 'genre']
