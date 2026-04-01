@@ -1,28 +1,15 @@
 import pandas as pd
 import numpy as np
 from numpy.linalg import norm
-import csv
-
-# with open('Spotify_Song_Attributes.csv', mode='r', newline='', encoding='utf-8') as file:
-#     # Create a CSV reader object
-#     csv_reader = csv.reader(file)
-
-#     for row in csv_reader:
-#         print(row)
-#         break
-
 
 dataFrame = pd.read_csv('test_data/Spotify_Song_Attributes.csv')
-# print(dataFrame.head())
-drop = ['artistName', 'msPlayed', 'type', 'id', 
+
+columns_to_drop = ['artistName', 'msPlayed', 'type', 'id', 
              'uri', 'track_href', 'analysis_url', 'genre']
 
-fullSongData = dataFrame.to_numpy()
-audioFeatures = dataFrame.drop(columns=drop)
-audioMatrix = audioFeatures.drop(columns=['trackName']).to_numpy()
-audioFeaturesWithName = audioFeatures.to_numpy()
-testSong1 = audioMatrix[0]
-testSong2 = audioMatrix[754]
+audioMatrix = dataFrame.drop(columns = columns_to_drop)
+audioFeatures = audioMatrix.drop(columns=['trackName']).to_numpy()
+audioFeaturesWithName = audioMatrix.to_numpy()
 
 idDict = {}
 songDict = {}
@@ -32,54 +19,27 @@ for i in range(1, len(audioFeaturesWithName)):
     songDict[audioFeaturesWithName[i][0]] = i
 
 
-
-
-# a = np.array([5, 4, 2])
-# b = np.array([1111, 2222, 333333])
 def cosine_similarity(song1, song2):
-    cosine = np.dot(song1, song2) / (norm(song1) * norm(song2))
+    denom = (norm(song1) * norm(song2))
+    if(denom == 0):
+        return 0
+    cosine = np.dot(song1, song2) / denom
     return cosine
 
-# print(cosine_similarity(a, b))
 
-# testMatrix = []
-# dataFrameDict = dataFrame.set_index('trackName').to_dict(orient='index')
-# print(dataFrameDict)
-
-# Adding to Similarity Matrix
-# def add_to_matrix(matrix, song):
-#     matrix.append(np.array(song))
-
-# add_to_matrix(testMatrix, testSong1)
-# add_to_matrix(testMatrix, testSong2)
-
-testMatrix = [[""]]
-testDict = {}
-testSongFull = fullSongData[0]
-
-#print(addSong, testSongFull, dataFrame['trackName'][0], testDict)
-# print(testMatrix)
-
-
-
-def top_song(song, n):
+def top_n_songs(song_index, n):
     similarity_scores = []
 
-    for i in range(1, len(audioMatrix)):
-        song2Name = audioMatrix[i][0]
-        print(song2Name)
-        similarity_scores.append(cosine_similarity(audioMatrix[song], audioMatrix[i]))
+    for i in range(0, len(audioFeatures)):
+        if(i == song_index):
+            continue
+        
+        similarity_scores.append((i,cosine_similarity(audioFeatures[song_index], audioFeatures[i])))
 
-    if n >= len(similarity_scores):
-        indexes = []
-        for i in similarity_scores:
-            indexes.append(similarity_scores.index(i))
-        return indexes
-    else:
-        values = sorted(similarity_scores, reverse = True)[:n]
-        indexes = []
-        for i in values:
-            indexes.append(values.index(i))
-        return indexes
 
-print(top_song(1, 4))
+    values = sorted(similarity_scores, key = lambda x: x[1], reverse = True)[:n]
+
+    
+    return [i for i,_ in values]
+
+print(top_n_songs(1, 4))
