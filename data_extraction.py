@@ -1,31 +1,16 @@
-import os
-import spotipy
-from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyClientCredentials
 import librosa
 import yt_dlp
 import numpy as np
-
-load_dotenv()
-
-client_id = os.getenv("SPOTIFY_CLIENT_ID")
-client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
-
-if not client_id or not client_secret:
-    raise RuntimeError("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET in .env file")
-
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-    client_id=client_id,
-    client_secret=client_secret
-))
-
+import os
+import pandas as pd
+#~/Downloads/ffmpeg
+#yt-dlp --ffmpeg-location "$HOME/Downloads/ffmpeg" URL
 def extract_features(youtube_url):
-
     os.makedirs('audio', exist_ok=True)
-
     ydl_opts = {
         'format' : 'bestaudio/best',
         'outtmpl' : 'audio/%(title)s.%(ext)s',
+        'download_archive': 'downloaded.txt',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -46,5 +31,14 @@ def extract_features(youtube_url):
     return{
         'mfccs': mfccs, 'chroma' : chroma, 'tempo' : tempo, 'spectral_centroid' : spectral_centroid, 'zcr' : zcr
     }
-    
+
+failed = []
+df = pd.read_csv('top_50s_chart.csv')
+last = df.iloc[:,-1] #all rows and last col
+for l in last:
+    try:
+        extract_features(l)
+    except:
+        print("Skipping this video because of error")
+        failed.append(l)
     
