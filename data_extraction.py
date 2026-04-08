@@ -1,12 +1,44 @@
+import librosa
+import yt_dlp
+import numpy as np
 import os
-import requests
-from dotenv import load_dotenv
-import sys
+import pandas as pd
+#~/Downloads/ffmpeg
+#yt-dlp --ffmpeg-location "$HOME/Downloads/ffmpeg" URL
+def extract_features(youtube_url):
+    os.makedirs('audio', exist_ok=True)
+    ydl_opts = {
+        'format' : 'bestaudio/best',
+        'outtmpl' : 'audio/%(title)s.%(ext)s',
+        'download_archive': 'downloaded.txt',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+        }]
+    }
 
-# MP3 downloads- will be found in /audios file
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(youtube_url, download= True)
+        filename = f"audio/{info['title']}.mp3"
+    
+    y, sr = librosa.load(filename)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr).mean(axis=1)
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr).mean(axis=1)
+    tempo, _ =librosa.beat.beat_track(y=y, sr=sr)
+    spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr).mean()
+    zcr = librosa.feature.zero_crossing_rate(y).mean()
 
-# TODO: create function to extract features from mp3 file
-# TODO: create function to graph the extracted features 
-# TODO: create function to normalize extracted features
+    return{
+        'mfccs': mfccs, 'chroma' : chroma, 'tempo' : tempo, 'spectral_centroid' : spectral_centroid, 'zcr' : zcr
+    }
 
-print("hi")
+failed = []
+df = pd.read_csv('top_50s_chart.csv')
+last = df.iloc[:,-1] #all rows and last col
+for l in last:
+    try:
+        extract_features(l)
+    except:
+        print("Skipping this video because of error")
+        failed.append(l)
+    
