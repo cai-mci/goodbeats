@@ -27,5 +27,19 @@ def get_song(id):
         'artistName': song['artistName'],
     }) 
 
+@app.route('/api/data', methods = ['GET'])
+def get_id(name):
+    result = df[df['trackName'].str.lower() == name.lower()]
+    
+    if result.empty:
+        return jsonify({"error": f"No song found for name '{name}'"}), 404
+    
+    song = result.iloc[0]
+    return jsonify({
+        "id": song['id'],
+        "trackName": song['trackName'],
+        "artistName": song['artistName']
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
