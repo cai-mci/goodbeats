@@ -5,6 +5,13 @@ import random
 app = Flask(__name__)
 CORS(app) 
 
+import random
+
+def randnums(numsongs):
+    a = random.randint(0, numsongs - 1)
+    b = random.randint(0, numsongs - 1)
+    return a, b
+
 # TODO
 @app.route('/api/recommend', methods=['GET'])
 def recommend():
@@ -13,7 +20,8 @@ def recommend():
 # TODO
 @app.route('/api/random-songs', methods=['GET'])
 def random_songs():
-    return jsonify({"message": "not defined yet"})
+    a, b = randnums(10)
+    return jsonify({"message": "{a}, {b}"})
 
 # TODO
 @app.route('/api/compare', methods=['POST'])
