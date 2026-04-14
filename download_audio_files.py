@@ -5,21 +5,21 @@ import os
 import pandas as pd
 #~/Downloads/ffmpeg
 #yt-dlp --ffmpeg-location "$HOME/Downloads/ffmpeg" URL
-def extract_features(youtube_url):
-    os.makedirs('audio', exist_ok=True)
+def extract_audio(youtube_url, year, rank):
+    os.makedirs('audios', exist_ok=True)
     ydl_opts = {
         'format' : 'bestaudio/best',
-        'outtmpl' : 'audio/%(title)s.%(ext)s',
         'download_archive': 'downloaded.txt',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-        }]
+        }],
+        'outtmpl': f'audios/{year}/{rank}'
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(youtube_url, download= True)
-        filename = f"audio/{info['title']}.mp3"
+        filename = f"audios/{year}/{rank}"
     
     y, sr = librosa.load(filename)
     mfccs = librosa.feature.mfcc(y=y, sr=sr).mean(axis=1)
@@ -32,15 +32,29 @@ def extract_features(youtube_url):
         'mfccs': mfccs, 'chroma' : chroma, 'tempo' : tempo, 'spectral_centroid' : spectral_centroid, 'zcr' : zcr
     }
 
-failed = []
 df = pd.read_csv('top_50s_chart.csv')
-last = df.iloc[:,-1] #all rows and last col
-for l in last:
+urls = df.iloc[:,-1] #all rows and last col
+yrs = df.iloc[:,0] #all rows, first column
+ranks = df.iloc[:,1] #all rows, second column
+#dataframe with all data
+df2 = pd.DataFrame({
+    'year':yrs,
+    'rank':ranks,
+    'url':urls
+})
+#filter for year>=2020
+df2['year'] = pd.to_numeric(df2['year'], errors='coerce')
+data = df2[df2['year']>=2020] 
+print(data)
+for i in range(len(data)):
     try:
-        extract_features(l)
+        uloc = data.iloc[i]['url']
+        yloc = data.iloc[i]['year']
+        rloc = data.iloc[i]['rank']
+        extract_audio(uloc,yloc,rloc)
     except:
         print("Skipping this video because of error")
-        failed.append(l)
+
     
 
 
