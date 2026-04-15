@@ -28,5 +28,11 @@ def random_songs():
 def compare():
     return jsonify({"message": "not defined yet"})
 
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    
+    return jsonify({"message": "not defined yet"})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
