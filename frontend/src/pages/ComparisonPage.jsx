@@ -9,7 +9,7 @@ function ComparisonPage() {
     try {
       const response = await fetch('http://localhost:5000/api/random-songs');
       const data = await response.json();
-      setSongs(data.message);
+      setSongs(data.song);
     } catch (error) {
       console.error("Error fetching random songs:", error);
     }

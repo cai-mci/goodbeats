@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app) 
@@ -18,10 +19,22 @@ def recommend():
     return jsonify({"message": "not defined yet"})
 
 # TODO
+data = pd.read_csv('Spotify_Song_Attributes.csv')
+columns_to_drop = ['artistName', 'msPlayed', 'type', 'id', 
+             'uri', 'track_href', 'analysis_url', 'genre']
+audioMatrix = data.drop(columns = columns_to_drop)
+audioFeaturesWithName = audioMatrix.to_numpy()
+
+idDict = {}
+
+for i in range(0, len(audioFeaturesWithName) - 1):
+    idDict[i] = audioFeaturesWithName[i][0]
+
 @app.route('/api/random-songs', methods=['GET'])
 def random_songs():
+    global idDict
     a, b = randnums(10)
-    return jsonify({"message": "{a}, {b}"})
+    return jsonify({"song": str(idDict[a])})
 
 # TODO
 @app.route('/api/compare', methods=['POST'])
