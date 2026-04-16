@@ -34,7 +34,7 @@ for i in range(0, len(audioFeaturesWithName) - 1):
 def random_songs():
     global idDict
     a, b = randnums(10)
-    return jsonify({"song": str(idDict[a])})
+    return jsonify({"song": str(idDict[a]), "song2": str(idDict[b])})
 
 # TODO
 @app.route('/api/compare', methods=['POST'])
