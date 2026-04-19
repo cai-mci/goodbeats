@@ -42,7 +42,7 @@ def recommend():
     #     return jsonify({"error": "Song not found"}), 404
     if not song:
         print(' no song param')
-    names = top_song_by_name(song, 10)
+    names = top_song_by_name(song, 9)
     print('found song_names', names)
     #recommendations = [audioMatrix.iloc[i]["name"] for i in indexes]
     return jsonify({"message": names})

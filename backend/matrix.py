@@ -14,24 +14,24 @@ import csv
 
 dataFrame = pd.read_csv('Clean_Features.csv')
 # print(dataFrame.head())
-drop = ['name_id', 'year', 'rank', 'url', 'artist']
+drop = ['name_id', 'year', 'rank', 'url']
 
 fullSongData = dataFrame.to_numpy()
 audioFeatures = dataFrame.drop(columns=drop)
-audioMatrix = audioFeatures.drop(columns=['name']).to_numpy()
-audioFeaturesWithName = audioFeatures.to_numpy()
+audioMatrix = audioFeatures.drop(columns=['name', 'artist']).to_numpy()
+audioFeaturesWithName = audioFeatures.to_numpy() #and artist
 # testSong1 = audioMatrix[0]
 # testSong2 = audioMatrix[754]
 
 idDict = {}
 songDict = {}
-
+artistDict = {} #maps song name to artist
 for i in range(len(audioFeaturesWithName)):
-    idDict[i] = audioFeaturesWithName[i][0]
-    songDict[audioFeaturesWithName[i][0]] = i
-
-
-
+    name = audioFeaturesWithName[i][0]
+    artist = audioFeaturesWithName[i][1]
+    idDict[i] = name
+    songDict[name] = i
+    artistDict[i] = artist
 
 # a = np.array([5, 4, 2])
 # b = np.array([1111, 2222, 333333])
@@ -77,10 +77,17 @@ def top_song(song, n):
         return [idx+1 for _,idx in scored_idx]
     else:
         return [idx+1 for _,idx in scored_idx[:n]]
+def clean_artist_name(artist):
+    if ',' in artist[-1]:
+        artist= artist[:-1]
+    if ',' in artist:
+        artists = [a.strip() for a in artist.split(",")]
+        return ', '.join(artists)
+    return str(artist)
 def top_song_by_name(song_name,n): #takes song name, returns song names
     song_index = songDict[song_name]
     similar_idxs = top_song(song_index, n+1)
-    names = [idDict[idx] for idx in similar_idxs]
+    names = [(idDict[idx], clean_artist_name(artistDict[idx])) for idx in similar_idxs]
     return names
 
 #print(top_song(1, 10))

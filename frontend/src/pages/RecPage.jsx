@@ -45,9 +45,17 @@ function RecPage() {
       {!loading && recs.length>0 &&(
         <div>
           <p>Found {recs.length} similar songs</p>
-          <ul>
+          <ul style={{listStyle: 'none', padding: 0}}>
             {recs.map((rec, index)=>(
-              <li key={index}>Song index: {rec}</li>
+              <li key={index} style={{
+                marginBottom: '10px',
+                padding: '10px',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+              }}><strong>{rec[0]}</strong>
+                <span style={{color: '#666',marginLeft:'5px'}}>by</span>
+                <span style={{marginLeft:'5px'}}>{rec[1]}</span>
+                </li>
             ))}
           </ul>
         </div>
