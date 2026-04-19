@@ -42,10 +42,10 @@ def recommend():
     #     return jsonify({"error": "Song not found"}), 404
     if not song:
         print(' no song param')
-    indexes = top_song_by_name(song, 10)
-    print('found indexes', indexes)
+    names = top_song_by_name(song, 10)
+    print('found song_names', names)
     #recommendations = [audioMatrix.iloc[i]["name"] for i in indexes]
-    return jsonify({"message": indexes})
+    return jsonify({"message": names})
 
 # TODO
 # data = pd.read_csv('Spotify_Song_Attributes.csv')

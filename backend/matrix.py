@@ -26,7 +26,7 @@ audioFeaturesWithName = audioFeatures.to_numpy()
 idDict = {}
 songDict = {}
 
-for i in range(1, len(audioFeaturesWithName)):
+for i in range(len(audioFeaturesWithName)):
     idDict[i] = audioFeaturesWithName[i][0]
     songDict[audioFeaturesWithName[i][0]] = i
 
@@ -77,9 +77,10 @@ def top_song(song, n):
         return [idx+1 for _,idx in scored_idx]
     else:
         return [idx+1 for _,idx in scored_idx[:n]]
-def top_song_by_name(song_name,n):
+def top_song_by_name(song_name,n): #takes song name, returns song names
     song_index = songDict[song_name]
     similar_idxs = top_song(song_index, n+1)
-    return similar_idxs
+    names = [idDict[idx] for idx in similar_idxs]
+    return names
 
 #print(top_song(1, 10))
