@@ -3,16 +3,30 @@ import { useState } from 'react';
 function RecPage() {
   
   const [song, setSong] = useState('');
-  const[recs, setRecs] = useState("");
+  const[recs, setRecs] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const testBackend = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/test');
+      const data = await response.json();
+      console.log('Backend test:', data);
+    } catch (error) {
+      console.error('Backend not reachable:', error);
+    }
+  };
   const fetchRecommendations = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setRecs([]);
     try {
-      const response = await fetch(`http://localhost:5000/api/recommend?song=${encodeURIComponent(song)}`);
+      //const response = await fetch(`http://localhost:5000/api/recommend?song=${encodeURIComponent(song)}`);
+      const response = await fetch(`http://127.0.0.1:5000/api/recommend?song=${encodeURIComponent(song)}`);
       const data = await response.json();
-      setRecs(data.message);
+      console.log("full response", data);
+      if (data.message){
+        setRecs(data.message);
+      }
+      //setRecs(data.message);
     } catch (error) {
       console.error("Error fetching recommendations:", error);
     }
@@ -22,7 +36,10 @@ function RecPage() {
   return (
     <div>
       <h2>Find Similar Songs</h2>
-      <form onSubmit={fetchRecommendations}>
+      <button onClick={testBackend} style={{ marginBottom: '10px' }}>
+        Test Backend Connection
+      </button>
+      <form onSubmit={(e) => fetchRecommendations(e)}>
         <input 
           type="text" 
           placeholder="Enter a song name..." 
@@ -37,7 +54,16 @@ function RecPage() {
       </form>
 
       <h3>Recommended for you:</h3>
-      <p> {recs} </p>
+      {!loading && recs.length>0 &&(
+        <div>
+          <p>Found {recs.length} similar songs</p>
+          <ul>
+            {recs.map((rec, index)=>(
+              <li key={index}>Song index: {rec}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

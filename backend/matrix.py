@@ -14,8 +14,7 @@ import csv
 
 dataFrame = pd.read_csv('Clean_Features.csv')
 # print(dataFrame.head())
-drop = ['name_id', 'year', 'rank', 
-             'url', 'artist']
+drop = ['name_id', 'year', 'rank', 'url', 'artist']
 
 fullSongData = dataFrame.to_numpy()
 audioFeatures = dataFrame.drop(columns=drop)
@@ -65,8 +64,10 @@ testSongFull = fullSongData[0]
 
 def top_song(song, n):
     similarity_scores = []
-    for i in range(1, len(audioMatrix)):
-        song2Name = audioMatrix[i][0]
+    for i in range(len(audioMatrix)):
+        if i==song:
+            continue
+        song2Name = audioMatrix[i][3]
         print(song2Name)
         similarity_scores.append(cosine_similarity(audioMatrix[song], audioMatrix[i]))
     #list of score index pairs
@@ -76,5 +77,9 @@ def top_song(song, n):
         return [idx+1 for _,idx in scored_idx]
     else:
         return [idx+1 for _,idx in scored_idx[:n]]
+def top_song_by_name(song_name,n):
+    song_index = songDict[song_name]
+    similar_idxs = top_song(song_index, n+1)
+    return similar_idxs
 
-print(top_song(1, 10))
+#print(top_song(1, 10))

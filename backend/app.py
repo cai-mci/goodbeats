@@ -5,10 +5,11 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from matrix import top_song, top_song_by_name
 load_dotenv()
-supabase_url = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
-supabase_key = os.getenv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
-supabase: Client = create_client(supabase_url, supabase_key)
+# supabase_url = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
+# supabase_key = os.getenv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY')
+# supabase: Client = create_client(supabase_url, supabase_key)
 app = Flask(__name__)
 CORS(app) 
 
@@ -20,25 +21,31 @@ def randnums(numsongs):
     return a, b
 
 # TODO
+@app.route('/api/test', methods=['GET'])
+def test():
+    return jsonify({"status": "Backend is running!", "port": 5000})
 @app.route('/api/recommend', methods=['GET'])
 def recommend():
     song = request.args.get("song")
+    print(f'Received request for song {song}')
+    # if not song:
+    #     return jsonify({"error": "No song provided"}), 400
+    # response = supabase.table('Clean_Features').select("*").execute()
+    # songIndex = None
+    # #code right now is getting the song index
+    # audioMatrix =response.data.to_numpy()
+    # for i, row in enumerate(audioMatrix):
+    #     if row[3].lower() == song.lower():
+    #         songIndex = i
+    #         break
+    # if songIndex is None:
+    #     return jsonify({"error": "Song not found"}), 404
     if not song:
-        return jsonify({"error": "No song provided"}), 400
-    response = supabase.table('Clean_Features').select("*").execute()
-    songIndex = None
-    #code right now is getting the song index
-    audioMatrix =response.data.to_numpy()
-    for i, row in enumerate(audioMatrix):
-        if row[3].lower() == song.lower():
-            songIndex = i
-            break
-    if songIndex is None:
-        return jsonify({"error": "Song not found"}), 404
-
-    #indexes = top_n_songs(songIndex, 10)
-    recommendations = [audioMatrix.iloc[i]["name"] for i in range(10)]
-    return jsonify({"message": recommendations})
+        print(' no song param')
+    indexes = top_song_by_name(song, 10)
+    print('found indexes', indexes)
+    #recommendations = [audioMatrix.iloc[i]["name"] for i in indexes]
+    return jsonify({"message": indexes})
 
 # TODO
 # data = pd.read_csv('Spotify_Song_Attributes.csv')
