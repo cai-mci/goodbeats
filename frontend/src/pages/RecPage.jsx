@@ -5,15 +5,6 @@ function RecPage() {
   const [song, setSong] = useState('');
   const[recs, setRecs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const testBackend = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/test');
-      const data = await response.json();
-      console.log('Backend test:', data);
-    } catch (error) {
-      console.error('Backend not reachable:', error);
-    }
-  };
   const fetchRecommendations = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -36,9 +27,6 @@ function RecPage() {
   return (
     <div>
       <h2>Find Similar Songs</h2>
-      <button onClick={testBackend} style={{ marginBottom: '10px' }}>
-        Test Backend Connection
-      </button>
       <form onSubmit={(e) => fetchRecommendations(e)}>
         <input 
           type="text" 
