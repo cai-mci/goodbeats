@@ -28,21 +28,15 @@ def test():
 def recommend():
     song = request.args.get("song")
     print(f'Received request for song {song}')
-    # if not song:
-    #     return jsonify({"error": "No song provided"}), 400
-    # response = supabase.table('Clean_Features').select("*").execute()
-    # songIndex = None
-    # #code right now is getting the song index
-    # audioMatrix =response.data.to_numpy()
-    # for i, row in enumerate(audioMatrix):
-    #     if row[3].lower() == song.lower():
-    #         songIndex = i
-    #         break
-    # if songIndex is None:
-    #     return jsonify({"error": "Song not found"}), 404
     if not song:
-        print(' no song param')
-    names = top_song_by_name(song, 9)
+        return jsonify({"error": "No song provided"}), 400
+    
+    try:
+        
+        names = top_song_by_name(song, 9)
+    except:
+        return jsonify({"error": "Song not in db"}), 400
+
     print('found song_names', names)
     #recommendations = [audioMatrix.iloc[i]["name"] for i in indexes]
     return jsonify({"message": names})

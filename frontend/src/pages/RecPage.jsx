@@ -1,35 +1,47 @@
 import { useState } from 'react';
 
 function RecPage() {
-  
   const [song, setSong] = useState('');
-  const[recs, setRecs] = useState([]);
+  const [recs, setRecs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const fetchRecommendations = async (e) => {
     e.preventDefault();
     setLoading(true);
     setRecs([]);
-    try {
-      //const response = await fetch(`http://localhost:5000/api/recommend?song=${encodeURIComponent(song)}`);
-      const response = await fetch(`https://goodbeats.onrender.com/api/recommend?song=${encodeURIComponent(song)}`);
+    setError(''); // clear previous errors
 
-      // const response = await fetch(`http://127.0.0.1:5000/api/recommend?song=${encodeURIComponent(song)}`);
+    try {
+      const response = await fetch(
+        `https://goodbeats.onrender.com/api/recommend?song=${encodeURIComponent(song)}`
+      );
+
       const data = await response.json();
       console.log("full response", data);
-      if (data.message){
+
+      if (!response.ok) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      if (data.message) {
         setRecs(data.message);
       }
-      //setRecs(data.message);
+
     } catch (error) {
-      console.error("Error fetching recommendations:", error);
+      console.error("not found:", error);
+      setError(`Song not in database yet. Try "Deja Vu" or "Stay"`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
     <div>
       <h2>Find Similar Songs</h2>
-      <form onSubmit={(e) => fetchRecommendations(e)}>
+
+      <form onSubmit={fetchRecommendations}>
         <input 
           type="text" 
           placeholder="Enter a song name..." 
@@ -44,20 +56,35 @@ function RecPage() {
       </form>
 
       <h3>Recommended for you:</h3>
-      {!loading && recs.length>0 &&(
+
+      {!loading && error && (
+        <p style={{ color: 'red', marginTop: '10px' }}>
+          {error}
+        </p>
+      )}
+
+      {!loading && !error && recs.length > 0 && (
         <div>
           <p>Found {recs.length} similar songs</p>
-          <ul style={{listStyle: 'none', padding: 0}}>
-            {recs.map((rec, index)=>(
-              <li key={index} style={{
-                marginBottom: '10px',
-                padding: '10px',
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-              }}><strong>{rec[0]}</strong>
-                <span style={{color: '#666',marginLeft:'5px'}}>by</span>
-                <span style={{marginLeft:'5px'}}>{rec[1]}</span>
-                </li>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {recs.map((rec, index) => (
+              <li
+                key={index}
+                style={{
+                  marginBottom: '10px',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '5px',
+                }}
+              >
+                <strong>{rec[0]}</strong>
+                <span style={{ color: '#666', marginLeft: '5px' }}>
+                  by
+                </span>
+                <span style={{ marginLeft: '5px' }}>
+                  {rec[1]}
+                </span>
+              </li>
             ))}
           </ul>
         </div>
