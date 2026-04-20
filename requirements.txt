@@ -1,3 +1,7 @@
+react-router-dom
 flask
 flask-cors
-react-router-dom
+gunicorn
+pandas
+python-dotenv
+supabase
